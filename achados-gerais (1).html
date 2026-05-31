@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Achados Gerais</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E24B4A;
+    --red-dark: #c03a39;
+    --black: #1a1a1a;
+    --gray: #6b6b6b;
+    --light: #f7f7f5;
+    --white: #ffffff;
+    --border: #e8e8e4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--light); color: var(--black); }
+
+  header {
+    background: var(--white); border-bottom: 1.5px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon { width: 36px; height: 36px; background: var(--red); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--black); }
+  .logo-text span { color: var(--red); }
+
+  .hero {
+    background: var(--black); padding: 5rem 2rem; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 60% 50%, #E24B4a22 0%, transparent 70%); pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block; background: var(--red); color: white;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    padding: 5px 14px; border-radius: 20px; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 800; color: white; line-height: 1.1; margin-bottom: 1rem; }
+  .hero h1 span { color: var(--red); }
+  .hero p { color: #aaa; font-size: 1rem; max-width: 480px; margin: 0 auto; }
+
+  /* FILTER TABS */
+  .filter-bar { background: var(--white); border-bottom: 1.5px solid var(--border); padding: 0 2rem; overflow-x: auto; display: flex; gap: 0; }
+  .filter-bar::-webkit-scrollbar { height: 0; }
+  .filter-btn {
+    padding: 14px 20px; font-size: 13px; font-weight: 600; color: var(--gray);
+    border: none; background: none; cursor: pointer; white-space: nowrap;
+    border-bottom: 2.5px solid transparent; transition: all .2s;
+  }
+  .filter-btn:hover { color: var(--red); }
+  .filter-btn.active { color: var(--red); border-bottom-color: var(--red); }
+
+  /* SECTIONS */
+  .cat-section { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+  .cat-emoji { font-size: 1.6rem; }
+  .cat-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; }
+  .cat-title span { color: var(--red); }
+
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; }
+
+  .card {
+    background: var(--white); border-radius: 16px; border: 1.5px solid var(--border);
+    overflow: hidden; transition: transform .25s, box-shadow .25s; cursor: pointer; display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.09); }
+  .card-img {
+    width: 100%; aspect-ratio: 1/1; background: #f0f0ee;
+    display: flex; align-items: center; justify-content: center; font-size: 3rem;
+    position: relative; overflow: hidden;
+  }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--red); color: white;
+    font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; z-index: 1;
+  }
+  .card-body { padding: 1rem 1rem 1.2rem; flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .card-name { font-weight: 600; font-size: 14px; line-height: 1.3; }
+  .card-desc { font-size: 12px; color: var(--gray); line-height: 1.5; flex: 1; }
+  .card-price { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-top: 4px; }
+  .card-price .old { font-size: 11px; color: #bbb; text-decoration: line-through; font-family: 'DM Sans', sans-serif; font-weight: 400; margin-right: 4px; }
+  .card-btn {
+    width: 100%; padding: 10px; background: var(--black); color: white;
+    border: none; border-radius: 10px; font-weight: 700; font-size: 13px;
+    cursor: pointer; transition: background .2s; margin-top: 8px;
+  }
+  .card-btn:hover { background: var(--red); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 20px; max-width: 500px; width: 100%; overflow: hidden; animation: slideUp .3s ease; }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-img { width: 100%; aspect-ratio: 4/3; background: #f0f0ee; display: flex; align-items: center; justify-content: center; font-size: 5rem; overflow: hidden; position: relative; }
+  .modal-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .modal-body { padding: 1.5rem; }
+  .modal-name { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .modal-desc { color: var(--gray); font-size: 13.5px; line-height: 1.6; margin-bottom: 1rem; }
+  .modal-price { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--red); margin-bottom: 1.2rem; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-close { flex: 1; padding: 12px; background: var(--light); border: 1.5px solid var(--border); border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--gray); }
+  .modal-buy { flex: 2; padding: 12px; background: var(--red); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background .2s; }
+  .modal-buy:hover { background: var(--red-dark); }
+
+  footer { background: var(--black); color: #555; text-align: center; padding: 2rem; font-size: 13px; }
+  footer span { color: var(--red); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2rem; }
+    .cat-section { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">
+    <div class="logo-icon">🛍️</div>
+    <div class="logo-text">Achados <span>Gerais</span></div>
+  </a>
+</header>
+
+<section class="hero">
+  <div class="hero-tag">✦ Melhores achados do dia</div>
+  <h1>Tudo que você<br>precisa, <span>aqui.</span></h1>
+  <p>Produtos selecionados nas melhores categorias. Clique e seja redirecionado para comprar.</p>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar"></div>
+
+<!-- PRODUCTS BY CATEGORY -->
+<div id="catalogContainer"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-img" id="modal-img"></div>
+    <div class="modal-body">
+      <div class="modal-name" id="modal-name"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="modal-price" id="modal-price"></div>
+      <div class="modal-actions">
+        <button class="modal-close" onclick="closeModal()">Fechar</button>
+        <button class="modal-buy" id="modal-buy">🛒 Comprar agora</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 <span>Achados Gerais</span> — Todos os direitos reservados</p>
+  <p style="margin-top:6px;font-size:11px;">Links de afiliado Mercado Livre. Ao comprar você apoia nossa loja.</p>
+</footer>
+
+<script>
+const catalog = [
+  {
+    category: "Eletrônicos",
+    emoji: "📱",
+    products: [
+      { name: "Fone Bluetooth sem fio", desc: "Som cristalino, bateria de 20h e cancelamento de ruído.", price: "89,90", old: "149,90", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_788865-MLA71783817626_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Smartwatch Fitness", desc: "Monitor cardíaco, sono, oximetria e notificações do celular.", price: "179,00", old: "299,00", badge: "Top", img: "https://http2.mlstatic.com/D_NQ_NP_612939-MLA71519446272_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Carregador Turbo 65W", desc: "Carrega seu celular do zero a 80% em menos de 30 minutos.", price: "49,90", old: "79,90", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487416_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Suporte Veicular Magnético", desc: "Fixação forte, rotação 360°, compatível com qualquer celular.", price: "29,90", old: "", badge: "Novo", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487432_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+    ]
+  },
+  {
+    category: "Casa & Cozinha",
+    emoji: "🏠",
+    products: [
+      { name: "Chaleira Elétrica 1,8L 1200W Unitermi Atacama", desc: "Desligamento automático que previne acidentes ao atingir a fervura.Construída em Aço Inox e Plástico, garantindo durabilidade.Alça ergonômica para conforto no uso diário.", price: "38,70", old: "68,15", badge: "Destaque", img: "https://http2.mlstatic.com/D_NQ_NP_2X_666995-MLA99455173642_112025-F.webp", link: "https://www.mercadolivre.com.br/social/ag20260530173059?matt_word=ag20260530173059&matt_tool=31233293&forceInApp=true&ref=BE%2Fc1NWu3qXJEXhBF8Qknq%2Bz134qoMktzwh6m12eBLCE5NOfd3JtajgdgNkEx2E1%2BHbxj7hWW5iqRQX7QEStxHGKrXcRrOrkonZsWKOZnRAZ3ov%2BWfXIy2BhOYbP%2BGp1mt%2BTJjP5A31bfEijIC30gMyL%2FDfhPtDsudDHqTtxFSQOq9wJF3a6UIwpbVuNKIeb0PqxAg%3D%3D" },
+      { name: "Jogo C/ 10 Espátulas De Silicone Cozinha Resistente Premium", desc: "Lindo jogo com 10 utensílios domésticos, para deixar a hora do preparo da sua comida mais alegre e gostoso.", price: "66,00", old: "89,00", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_2X_838218-MLB101581949685_122025-F-jogo-c-10-espatulas-de-silicone-cozinha-resistente-premium.webp", link: "https://meli.la/2hVcaai" },
+      { name: "Luminária LED de Mesa", desc: "Luz ajustável, porta-USB integrado e design minimalista.", price: "79,90", old: "119,90", badge: "", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487400_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Organizador de Gaveta", desc: "Kit 8 divisórias modulares, ideal para cozinha e escritório.", price: "39,90", old: "", badge: "Novo", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487520_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+    ]
+  },
+  {
+    category: "Moda",
+    emoji: "👕",
+    products: [
+      { name: "Tênis Casual Confortável", desc: "Solado macio, respirável e disponível em várias cores.", price: "119,90", old: "189,00", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487430_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Relógio Masculino Clássico", desc: "Pulseira de couro legítimo, resistente à água e elegante.", price: "159,00", old: "249,00", badge: "Top", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487480_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Óculos de Sol UV400", desc: "Proteção total, armação leve e lentes polarizadas.", price: "69,90", old: "99,90", badge: "", img: "https://http2.mlstatic.com/D_NQ_NP_988007-MLA71694487320_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Mochila Resistente 30L", desc: "Bolso para notebook, impermeável e alças acolchoadas.", price: "99,90", old: "159,00", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487450_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+    ]
+  },
+  {
+    category: "Beleza",
+    emoji: "✨",
+    products: [
+      { name: "Secador de Cabelo 2200W", desc: "Íon negativo, 3 temperaturas, acabamento profissional em casa.", price: "129,90", old: "199,00", badge: "Destaque", img: "https://http2.mlstatic.com/D_NQ_NP_988007-MLA71694487340_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Massageador Elétrico Facial", desc: "Vibração profunda, estimula colágeno e reduz inchaço.", price: "59,90", old: "89,90", badge: "Novo", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487460_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Kit Skincare Completo", desc: "Sérum, hidratante e protetor solar em kit econômico.", price: "89,90", old: "139,00", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487510_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Escova Alisadora Cerâmica", desc: "Temperatura ajustável, placa de cerâmica anti-frizz.", price: "79,90", old: "129,90", badge: "", img: "https://http2.mlstatic.com/D_NQ_NP_988007-MLA71694487360_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+    ]
+  },
+  {
+    category: "Esporte",
+    emoji: "💪",
+    products: [
+      { name: "Kit Halteres Ajustáveis 20kg", desc: "Par de halteres com carga ajustável, ideal para treino em casa.", price: "189,90", old: "299,00", badge: "Top", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487440_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Tapete de Yoga Antiderrapante", desc: "5mm de espessura, ecológico e fácil de transportar.", price: "49,90", old: "79,90", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487490_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Garrafa Térmica 1L Aço Inox", desc: "Mantém frio por 24h e quente por 12h, sem BPA.", price: "59,90", old: "89,00", badge: "Novo", img: "https://http2.mlstatic.com/D_NQ_NP_988007-MLA71694487380_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Corda de Pular Profissional", desc: "Cabo de aço, rolamentos de precisão e alças emborrachadas.", price: "34,90", old: "", badge: "", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487500_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+    ]
+  },
+  {
+    category: "Pets",
+    emoji: "🐾",
+    products: [
+      { name: "Comedouro Automático Pet", desc: "Programável, controle por app e capacidade de 3kg.", price: "149,90", old: "229,00", badge: "Destaque", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487530_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Arranhador para Gatos", desc: "Sisal natural, estável e com brinquedo pendente.", price: "69,90", old: "99,90", badge: "", img: "https://http2.mlstatic.com/D_NQ_NP_988007-MLA71694487400_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Coleira Anti-pulgas Ajustável", desc: "Proteção de 8 meses, resistente à água e segura.", price: "39,90", old: "59,90", badge: "Oferta", img: "https://http2.mlstatic.com/D_NQ_NP_849807-MLA71694487520_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+      { name: "Caminha Pet Confortável M", desc: "Pelúcia macia, lavável na máquina, tamanho médio.", price: "79,90", old: "119,00", badge: "Novo", img: "https://http2.mlstatic.com/D_NQ_NP_793455-MLA71694487560_092023-O.webp", link: "SEU_LINK_AFILIADO_AQUI" },
+    ]
+  }
+];
+
+// Render filter bar
+const filterBar = document.getElementById('filterBar');
+const allBtn = document.createElement('button');
+allBtn.className = 'filter-btn active';
+allBtn.textContent = '🛍️ Todos';
+allBtn.onclick = () => filterCat('all', allBtn);
+filterBar.appendChild(allBtn);
+
+catalog.forEach(cat => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.textContent = cat.emoji + ' ' + cat.category;
+  btn.onclick = () => filterCat(cat.category, btn);
+  filterBar.appendChild(btn);
+});
+
+function filterCat(name, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.cat-section').forEach(s => {
+    s.style.display = (name === 'all' || s.dataset.cat === name) ? '' : 'none';
+  });
+}
+
+// Render catalog
+const container = document.getElementById('catalogContainer');
+catalog.forEach(cat => {
+  const sec = document.createElement('div');
+  sec.className = 'cat-section';
+  sec.dataset.cat = cat.category;
+  sec.innerHTML = `
+    <div class="cat-header">
+      <span class="cat-emoji">${cat.emoji}</span>
+      <h2 class="cat-title">${cat.category.split(' ')[0]} <span>${cat.category.split(' ').slice(1).join(' ')}</span></h2>
+    </div>
+    <div class="products-grid">
+      ${cat.products.map((p, i) => `
+        <div class="card" onclick="openModal('${cat.category}',${i})">
+          <div class="card-img">
+            ${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="this.parentElement.innerHTML='${cat.emoji}'">` : cat.emoji}
+            ${p.badge ? `<span class="card-badge">${p.badge}</span>` : ''}
+          </div>
+          <div class="card-body">
+            <div class="card-name">${p.name}</div>
+            <div class="card-desc">${p.desc}</div>
+            <div class="card-price">
+              ${p.old ? `<span class="old">R$ ${p.old}</span>` : ''}
+              R$ ${p.price}
+            </div>
+            <button class="card-btn">🛒 Comprar agora</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  container.appendChild(sec);
+});
+
+function openModal(catName, i) {
+  const cat = catalog.find(c => c.category === catName);
+  const p = cat.products[i];
+  const imgEl = document.getElementById('modal-img');
+  imgEl.innerHTML = p.img
+    ? `<img src="${p.img}" alt="${p.name}" onerror="this.parentElement.innerHTML='${cat.emoji}'">`
+    : cat.emoji;
+  document.getElementById('modal-name').textContent = p.name;
+  document.getElementById('modal-desc').textContent = p.desc;
+  document.getElementById('modal-price').textContent = 'R$ ' + p.price;
+  document.getElementById('modal-buy').onclick = () => window.open(p.link, '_blank');
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+</script>
+</body>
+</html>
